@@ -1,13 +1,19 @@
 import torch
 
+def output_to_label(z):
+    label = torch.zeros_like(z)
+    label[torch.tensor(range(z.shape[0])), torch.argmax(z, dim=1)] = 1
+    return label
+
+
 def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epochs, print_every):
     print("Starting training")
     device = torch.device("cuda" if torch.cuda.is_available()
-                                  else "cpu")
+                          else "cpu")
     model.to(device)
     train_losses, train_accs, val_losses, val_accs = [], [], [], []
 
-    for epoch in range(1, num_epochs+1):
+    for epoch in range(1, num_epochs + 1):
         model, train_loss, train_acc = train_epoch(model,
                                                    optimizer,
                                                    loss_fn,
@@ -17,8 +23,8 @@ def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epoch
                                                    print_every)
         val_loss, val_acc = validate(model, loss_fn, val_loader, device)
         print(f"Epoch {epoch}/{num_epochs}: "
-              f"Train loss: {sum(train_loss)/len(train_loss):.3f}, "
-              f"Train acc.: {sum(train_acc)/len(train_acc):.3f}, "
+              f"Train loss: {sum(train_loss) / len(train_loss):.3f}, "
+              f"Train acc.: {sum(train_acc) / len(train_acc):.3f}, "
               f"Val. loss: {val_loss:.3f}, "
               f"Val. acc.: {val_acc:.3f}")
         train_losses.extend(train_loss)
@@ -26,6 +32,7 @@ def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epoch
         val_losses.append(val_loss)
         val_accs.append(val_acc)
     return model, train_losses, train_accs, val_losses, val_accs
+
 
 def train_epoch(model, optimizer, loss_fn, train_loader, val_loader, device, print_every):
     # Train:
@@ -42,22 +49,20 @@ def train_epoch(model, optimizer, loss_fn, train_loader, val_loader, device, pri
         train_loss_batches.append(loss.item())
 
         hard_preds = output_to_label(z)
-        acc_batch_avg = (hard_preds == labels).float().mean().item()
+        acc_batch_avg = (torch.argmax(hard_preds, dim=1) == torch.argmax(labels, dim=1)).float().mean().item()
         train_acc_batches.append(acc_batch_avg)
 
-        # If you want to print your progress more often than every epoch you can
-        # set `print_every` to the number of batches you want between every status update.
-        # Note that the print out will trigger a full validation on the full val. set => slows down training
         if print_every is not None and batch_index % print_every == 0:
             val_loss, val_acc = validate(model, loss_fn, val_loader, device)
             model.train()
             print(f"\tBatch {batch_index}/{num_batches}: "
-                  f"\tTrain loss: {sum(train_loss_batches[-print_every:])/print_every:.3f}, "
-                  f"\tTrain acc.: {sum(train_acc_batches[-print_every:])/print_every:.3f}, "
+                  f"\tTrain loss: {sum(train_loss_batches[-print_every:]) / print_every:.3f}, "
+                  f"\tTrain acc.: {sum(train_acc_batches[-print_every:]) / print_every:.3f}, "
                   f"\tVal. loss: {val_loss:.3f}, "
                   f"\tVal. acc.: {val_acc:.3f}")
 
     return model, train_loss_batches, train_acc_batches
+
 
 def validate(model, loss_fn, val_loader, device):
     val_loss_cum = 0
@@ -71,6 +76,6 @@ def validate(model, loss_fn, val_loader, device):
             batch_loss = loss_fn(z, labels.float())
             val_loss_cum += batch_loss.item()
             hard_preds = output_to_label(z)
-            acc_batch_avg = (hard_preds == labels).float().mean().item()
+            acc_batch_avg = (torch.argmax(hard_preds, dim=1) == torch.argmax(labels, dim=1)).float().mean().item()
             val_acc_cum += acc_batch_avg
-    return val_loss_cum/len(val_loader), val_acc_cum/len(val_loader)
+    return val_loss_cum / len(val_loader), val_acc_cum / len(val_loader)

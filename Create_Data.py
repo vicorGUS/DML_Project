@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import torch.nn.functional as F
 import torch
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, TensorDataset, Subset
 
 
 def read(f, normalized=False):
@@ -50,7 +50,9 @@ np.savetxt("Spectrograms.txt", A_reshaped)"""
 
 A_reshaped = np.loadtxt("Spectrograms.txt")
 
-A = A_reshaped.reshape(A.shape)
+A_reshaped = np.nan_to_num(A)
+
+A = A_reshaped.reshape([len(metadata['file_name']), 1, 129, 200])
 
 X_train, X_val, y_train, y_val = train_test_split(torch.from_numpy(A), y,
                                                   test_size=0.2, random_state=8)
@@ -58,7 +60,5 @@ X_train, X_val, y_train, y_val = train_test_split(torch.from_numpy(A), y,
 train_data = TensorDataset(X_train, y_train)
 val_data = TensorDataset(X_val, y_val)
 
-train_loader = DataLoader(dataset=train_data, batch_size=10, shuffle=True)
-val_loader = DataLoader(dataset=val_data, batch_size=10)
-
-print(train_loader)
+train_loader = DataLoader(dataset=train_data, batch_size=64, shuffle=True)
+val_loader = DataLoader(dataset=val_data, batch_size=64)

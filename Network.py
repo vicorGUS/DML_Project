@@ -15,13 +15,13 @@ class BIRDCNN(nn.Module):
         self.fc2 = nn.Linear(128, 91)
 
     def forward(self, input_batch):
-        print(input_batch.shape)
         x = self.conv1(input_batch)
         x = self.pool(F.relu(self.conv2(x)))
+        x = F.normalize(x)
         x = self.conv3(x)
         x = self.pool(F.relu(self.conv4(x)))
         x = torch.flatten(x, 1)
         x = F.relu(self.fc1(x))
-        x = F.softmax(self.fc2(x))
+        x = F.softmax(self.fc2(x), dim=1)
         return x
 
