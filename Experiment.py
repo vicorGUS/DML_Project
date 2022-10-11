@@ -4,10 +4,9 @@ from Network import BIRDCNN
 from Train import training_loop
 from Create_Data import train_loader, val_loader
 
-
 model = BIRDCNN().double()
 
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-7)
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 loss_fn = nn.CrossEntropyLoss()
 
-training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epochs=1, print_every=1)
+training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epochs=50, print_every=None)

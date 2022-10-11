@@ -1,10 +1,5 @@
 import torch
 
-def output_to_label(z):
-    label = torch.zeros_like(z)
-    label[torch.tensor(range(z.shape[0])), torch.argmax(z, dim=1)] = 1
-    return label
-
 
 def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epochs, print_every):
     print("Starting training")
@@ -43,13 +38,11 @@ def train_epoch(model, optimizer, loss_fn, train_loader, val_loader, device, pri
         inputs, labels = x.to(device), y.to(device)
         optimizer.zero_grad()
         z = model.forward(inputs)
-        loss = loss_fn(z, labels.float())
+        loss = loss_fn(z, labels.long())
         loss.backward()
         optimizer.step()
         train_loss_batches.append(loss.item())
-
-        hard_preds = output_to_label(z)
-        acc_batch_avg = (torch.argmax(hard_preds, dim=1) == torch.argmax(labels, dim=1)).float().mean().item()
+        acc_batch_avg = (torch.argmax(z, dim=1) == labels).float().mean().item()
         train_acc_batches.append(acc_batch_avg)
 
         if print_every is not None and batch_index % print_every == 0:
@@ -72,10 +65,8 @@ def validate(model, loss_fn, val_loader, device):
         for batch_index, (x, y) in enumerate(val_loader, 1):
             inputs, labels = x.to(device), y.to(device)
             z = model.forward(inputs)
-
-            batch_loss = loss_fn(z, labels.float())
+            batch_loss = loss_fn(z, labels.long())
             val_loss_cum += batch_loss.item()
-            hard_preds = output_to_label(z)
-            acc_batch_avg = (torch.argmax(hard_preds, dim=1) == torch.argmax(labels, dim=1)).float().mean().item()
+            acc_batch_avg = (torch.argmax(z, dim=1) == labels).float().mean().item()
             val_acc_cum += acc_batch_avg
     return val_loss_cum / len(val_loader), val_acc_cum / len(val_loader)
