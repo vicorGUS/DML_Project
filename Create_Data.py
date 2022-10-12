@@ -85,15 +85,27 @@ A = [data[i] for i in data]
 """for i in range(2730):
     plt.imshow(np.log(A[i]))
     plt.show()"""
+input = []
+label = []
+for x,i in enumerate(A):
+    b = i.shape[1]//196
+    for j in range(b):
+        input.append(i[:,int((i.shape[1]-196*(b-j))/2):int((i.shape[1]-196*(b-2-j))/2)])
+        label.append(int(y[x].item()))
 
-X_train, X_val, y_train, y_val = train_test_split(A, y,
-                                                  test_size=0.2, random_state=8, stratify=y)
+
+X_train, X_val, y_train, y_val = train_test_split(input, label,
+                                                  test_size=0.2, random_state=8, stratify=label)
 
 transforms = transforms.Compose(
-    [transforms.ToTensor(), transforms.RandomCrop(size=(128, 196), pad_if_needed=True)])
+    [transforms.ToTensor()])
 
 train_data = CustomTensorDataset(tensors=[X_train, y_train], transform=transforms)
 val_data = CustomTensorDataset(tensors=[X_val, y_val], transform=transforms)
 
 train_loader = DataLoader(dataset=train_data, batch_size=32, shuffle=True)
 val_loader = DataLoader(dataset=val_data, batch_size=32)
+
+weights = []
+for i in range(91):
+    weights.append(1/label.count(i))
