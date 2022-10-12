@@ -2,8 +2,8 @@ import librosa
 import matplotlib.pyplot as plt
 import numpy as np
 import pydub
-from scipy.signal import spectrogram
 from librosa import feature
+from librosa.display import specshow
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import torch.nn.functional as F
@@ -42,60 +42,58 @@ def read(f, normalized=False):
         return a.frame_rate, b
 
 
+def log_clipped(a):
+    return np.log(np.clip(a, .0000001, a.max()))
+
+
 metadata = pd.read_csv('archive/xeno-canto_ca-nv_index.csv')
-length_sec = metadata['duration_seconds']
-max_length = np.max(length_sec * 25000)
 
 y = torch.zeros(2730)
-
 for i in range(91):
-    y[i*30:(i + 1)*30] = i
+    y[i * 30:(i + 1) * 30] = i
 
-"""
-A = np.empty([len(metadata['file_name']), 128, 196])
-B = np.empty([len(metadata['file_name']), 128, 196])
+"""A = []
+B = []
 
 for i, name in enumerate(metadata['file_name']):
-    sr, x = read(f'archive/xeno-canto-ca-nv/{name}')
+    sr, x = read(f'archive/xeno-canto-ca-nv/{name}', normalized=True)
     if np.ndim(x) > 1:
         x = x[:, 0]
-    x = np.concatenate((np.random.uniform(0, 1, size=max_length - int(len(x)/2)), x, np.random.uniform(0, 1, size=max_length - int(len(x)/2))))
-    x_max = np.argmax(x)
-    Sxx = feature.melspectrogram(y=x[x_max-50000:x_max+50000], sr=sr)
-    Stft = librosa.stft(y=x[x_max-50000:x_max+50000], n_fft=255, hop_length=511)
+    Sxx = feature.melspectrogram(y=x, sr=sr)
+    #Stft = np.real(librosa.stft(y=x, n_fft=255))
+    A.append(Sxx)
+    #B.append(Stft)
     print(i)
-    A[i] = Sxx
-    B[i] = np.real(Stft)
-    assert Sxx.shape == (128, 196), print(Sxx.shape)
 
-A_reshaped = A.reshape(A.shape[0], -1)
-B_reshaped = B.reshape(B.shape[0], -1)
+np.savez("Melspectrogram_new.npz", *A)"""
+#np.savez("Stft_new.npz", *B)
 
-#np.savetxt("Melspectrogram.txt", A_reshaped)
-#np.savetxt("Stft.txt", B_reshaped)"""
+data = np.load('Melspectrogram_new.npz')
 
-A_reshaped = np.loadtxt("Melspectrogram.txt")
-B_reshaped = np.loadtxt("Stft.txt")
+A = [data[i] for i in data]
 
-A = A_reshaped.reshape([len(metadata['file_name']), 128, 196])
-B = B_reshaped.reshape([len(metadata['file_name']), 128, 196])
+#A = np.loadtxt("Melspectrogram.txt")
+#B = np.loadtxt("Stft.txt")
 
-C = np.zeros([len(metadata['file_name']), 2, 128, 196])
-C[:, 0] = A
-C[:, 1] = B
+#A = A_reshaped.reshape([len(metadata['file_name']), 128, 196])
+#B = B_reshaped.reshape([len(metadata['file_name']), 128, 196])
 
-"""for i in range(0, 2730, 40):
-    plt.imshow(A[i, 0])
+#C = np.zeros([len(metadata['file_name']), 2, 128, 196])
+#C[:, 0] = A
+#C[:, 1] = B
+
+"""for i in range(2730):
+    plt.imshow(np.log(A[i]))
     plt.show()"""
 
-X_train, X_val, y_train, y_val = train_test_split(C, y,
-                                                  test_size=0.2, random_state=8)
+X_train, X_val, y_train, y_val = train_test_split(A, y,
+                                                  test_size=0.2, random_state=8, stratify=y)
 
-transforms = transforms.Compose([transforms.ToTensor(), transforms.Normalize((np.mean(A, axis=0), np.mean(B, axis=0)),
-                                                                             (np.std(A, axis=0)), np.std(B, axis=0))])
+transforms = transforms.Compose(
+    [transforms.ToTensor(), transforms.RandomCrop(size=(128, 196), pad_if_needed=True)])
 
-train_data = CustomTensorDataset(tensors=[X_train, y_train], transform=None)
-val_data = CustomTensorDataset(tensors=[X_val, y_val], transform=None)
+train_data = CustomTensorDataset(tensors=[X_train, y_train], transform=transforms)
+val_data = CustomTensorDataset(tensors=[X_val, y_val], transform=transforms)
 
 train_loader = DataLoader(dataset=train_data, batch_size=32, shuffle=True)
 val_loader = DataLoader(dataset=val_data, batch_size=32)
