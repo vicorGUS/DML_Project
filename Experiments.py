@@ -27,7 +27,6 @@ def experiment():
     learning_rate = 1e-4
     weight_decay = 1e-5
     batch_size = 32
-    model = StandardCNN()
 
     ### Experiment 1
     print('Learning rate experiment')
@@ -40,6 +39,7 @@ def experiment():
     learning_rates = [1e-5, 1e-4, 1e-3]
 
     for lr in learning_rates:
+        model = StandardCNN()
         train_loader, val_loader, weights = create_loaders(data, batch_size)
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
@@ -64,6 +64,7 @@ def experiment():
     weight_decays = [0, 1e-5, 1e-3]
 
     for wd in weight_decays:
+        model = StandardCNN()
         train_loader, val_loader, weights = create_loaders(data, batch_size)
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
@@ -88,6 +89,7 @@ def experiment():
     batch_sizes = [16, 32, 64]
 
     for bs in batch_sizes:
+        model = StandardCNN()
         train_loader, val_loader, weights = create_loaders(data, bs)
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
