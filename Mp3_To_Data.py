@@ -6,8 +6,6 @@ from Helper import read
 
 def data_from_mp3(Create_stft = False):
     metadata = pd.read_csv('archive/xeno-canto_ca-nv_index.csv')
-    y = [i//30 for i in range(2730)]
-
     mel = []
     shorttft = []
     for i, name in enumerate(metadata['file_name']):
@@ -19,8 +17,6 @@ def data_from_mp3(Create_stft = False):
         if Create_stft == True:
             Stft = np.real(librosa.stft(y=x, n_fft=255))
             shorttft.append(Stft)
-        print(i)
-
     np.savez("Melspectrogram_new.npz", *mel)
     if Create_stft == True:
         np.savez("Stft_new.npz", *shorttft)
