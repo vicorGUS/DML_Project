@@ -4,7 +4,8 @@ import pandas as pd
 from librosa import feature
 from Helper import read
 
-def data_from_mp3(Create_stft = False):
+
+def data_from_mp3(Create_stft=False):
     metadata = pd.read_csv('archive/xeno-canto_ca-nv_index.csv')
     mel = []
     shorttft = []
@@ -18,10 +19,7 @@ def data_from_mp3(Create_stft = False):
             Stft = np.real(librosa.stft(y=x, n_fft=255))
             shorttft.append(Stft)
     np.savez("Melspectrogram_new.npz", *mel)
-    if Create_stft == True:
+    if Create_stft:
         np.savez("Stft_new.npz", *shorttft)
 
     print("Done!")
-
-
-

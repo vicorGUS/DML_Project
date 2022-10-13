@@ -7,11 +7,11 @@ class LearningCurvePlot:
 
     def __init__(self, title=None, metrics=None):
         self.fig, self.ax = plt.subplots()
-        if metrics == loss:
+        if metrics == 'loss':
             self.ax.set_ylabel('Loss')
-        elif metrics == accuracy:
+        elif metrics == 'accuracy':
             self.ax.set_ylabel('Accuracy')
-        self.ax.set_xlabel('Episode')
+        self.ax.set_xlabel('Epoch')
 
         if title is not None:
             self.ax.set_title(title)
