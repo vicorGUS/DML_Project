@@ -20,7 +20,7 @@ def train(num_epochs, loss_fn, learning_rate,
 
 
 def experiment():
-    n_epochs = 2
+    n_epochs = 20
     data = np.load('Melspectrogram_new.npz')
 
     # Standard settings
@@ -31,9 +31,9 @@ def experiment():
     ### Experiment 1
     print('Learning rate experiment')
     Plot_loss = LearningCurvePlot(
-        title=r'Audio identification: Effect of changing the learning rate', metrics='loss')
+        title=r'Audio identification loss: Effect of changing the learning rate', metrics='loss')
     Plot_accuracy = LearningCurvePlot(
-        title=r'Audio identification: Effect of changing the learning rate', metrics='accuracy')
+        title=r'Audio identification accuracy: Effect of changing the learning rate', metrics='accuracy')
 
     # Settings
     learning_rates = [1e-5, 1e-4, 1e-3]
@@ -44,11 +44,10 @@ def experiment():
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
             n_epochs, loss_fn, lr, weight_decay, model, train_loader, val_loader)
-        batch_per_epoch = int(len(train_losses) / len(val_losses))
-        Plot_loss.add_curve(train_losses[::batch_per_epoch], label='Training loss, lr = {:.1e}'.format(lr))
-        Plot_loss.add_curve(val_losses, label='Validation loss, lr = {:.1e}'.format(lr))
-        Plot_accuracy.add_curve(train_accs[::batch_per_epoch], label='Training accuracy, lr = {:.1e}'.format(lr))
-        Plot_accuracy.add_curve(val_accs, label='Validation accuracy, lr = {:.1e}'.format(lr))
+        Plot_loss.add_curve(train_losses, label='Training, lr = {:.0e}'.format(lr).replace("e-0", "e-"))
+        Plot_loss.add_curve(val_losses, label='Validation, lr = {:.0e}'.format(lr).replace("e-0", "e-"))
+        Plot_accuracy.add_curve(train_accs, label='Training, lr = {:.0e}'.format(lr).replace("e-0", "e-"))
+        Plot_accuracy.add_curve(val_accs, label='Validation, lr = {:.0e}'.format(lr).replace("e-0", "e-"))
 
     Plot_loss.save('Learning_rate_loss.png')
     Plot_accuracy.save('Learning_rate_accuracy.png')
@@ -56,9 +55,9 @@ def experiment():
     ### Experiment 2
     print('Weight decay experiment')
     Plot_loss = LearningCurvePlot(
-        title=r'Audio identification: Effect of changing the weight decay', metrics='loss')
+        title=r'Audio identification loss: Effect of changing the weight decay', metrics='loss')
     Plot_accuracy = LearningCurvePlot(
-        title=r'Audio identification: Effect of changing the weight decay', metrics='accuracy')
+        title=r'Audio identification accuracy: Effect of changing the weight decay', metrics='accuracy')
 
     # Settings
     weight_decays = [0, 1e-5, 1e-3]
@@ -69,11 +68,16 @@ def experiment():
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
             n_epochs, loss_fn, learning_rate, wd, model, train_loader, val_loader)
-        batch_per_epoch = int(len(train_losses) / len(val_losses))
-        Plot_loss.add_curve(train_losses[::batch_per_epoch], label='Training loss, wd = {:.1e}'.format(wd))
-        Plot_loss.add_curve(val_losses, label='Validation loss, wd = {:.1e}'.format(wd))
-        Plot_accuracy.add_curve(train_accs[::batch_per_epoch], label='Training accuracy, wd = {:.1e}'.format(wd))
-        Plot_accuracy.add_curve(val_accs, label='Validation accuracy, wd = {:.1e}'.format(wd))
+        if wd == 0:
+            Plot_loss.add_curve(train_losses, label='Training, wd = {:d}'.format(wd))
+            Plot_loss.add_curve(val_losses, label='Validation, wd = {:d}'.format(wd))
+            Plot_accuracy.add_curve(train_accs, label='Training, wd = {:d}'.format(wd))
+            Plot_accuracy.add_curve(val_accs, label='Validation, wd = {:d}'.format(wd))
+        else:
+            Plot_loss.add_curve(train_losses, label='Training, wd = {:.0e}'.format(wd).replace("e-0", "e-"))
+            Plot_loss.add_curve(val_losses, label='Validation, wd = {:.0e}'.format(wd).replace("e-0", "e-"))
+            Plot_accuracy.add_curve(train_accs, label='Training, wd = {:.0e}'.format(wd).replace("e-0", "e-"))
+            Plot_accuracy.add_curve(val_accs, label='Validation, wd = {:.0e}'.format(wd).replace("e-0", "e-"))
 
     Plot_loss.save('Weight_decay_loss.png')
     Plot_accuracy.save('Weight_decay_accuracy.png')
@@ -81,9 +85,9 @@ def experiment():
     ### Experiment 3
     print('Batch size experiment')
     Plot_loss = LearningCurvePlot(
-        title=r'Audio identification: Effect of changing the batch size', metrics='loss')
+        title=r'Audio identification loss: Effect of changing the batch size', metrics='loss')
     Plot_accuracy = LearningCurvePlot(
-        title=r'Audio identification: Effect of changing the batch size', metrics='accuracy')
+        title=r'Audio identification accuracy: Effect of changing the batch size', metrics='accuracy')
 
     # Settings
     batch_sizes = [16, 32, 64]
@@ -94,11 +98,10 @@ def experiment():
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
             n_epochs, loss_fn, learning_rate, weight_decay, model, train_loader, val_loader)
-        batch_per_epoch = int(len(train_losses) / len(val_losses))
-        Plot_loss.add_curve(train_losses[::batch_per_epoch], label='Training loss, batch size = {}'.format(bs))
-        Plot_loss.add_curve(val_losses, label='Validation loss, batch size = {}'.format(bs))
-        Plot_accuracy.add_curve(train_accs[::batch_per_epoch], label='Training accuracy, batch size = {}'.format(bs))
-        Plot_accuracy.add_curve(val_accs, label='Validation accuracy, batch size = {}'.format(bs))
+        Plot_loss.add_curve(train_losses, label='Training, batch size = {}'.format(bs))
+        Plot_loss.add_curve(val_losses, label='Validation, batch size = {}'.format(bs))
+        Plot_accuracy.add_curve(train_accs, label='Training, batch size = {}'.format(bs))
+        Plot_accuracy.add_curve(val_accs, label='Validation, batch size = {}'.format(bs))
 
     Plot_loss.save('Batch_size_loss.png')
     Plot_accuracy.save('Batch_size_accuracy.png')
@@ -106,23 +109,23 @@ def experiment():
     ### Experiment 4
     print('Ablation study')
     Plot_loss = LearningCurvePlot(
-        title=r'Audio identification: Effect of changing the model architecture', metrics='loss')
+        title=r'Audio identification loss: Effect of changing the model architecture', metrics='loss')
     Plot_accuracy = LearningCurvePlot(
-        title=r'Audio identification: Effect of changing the model architecture', metrics='accuracy')
+        title=r'Audio identification accuracy: Effect of changing the model architecture', metrics='accuracy')
 
     # Settings
     models = [StandardCNN(), ShallowCNN(), DeepCNN()]
+    model_names = ['Standard CNN', 'Shallow CNN', 'Deep CNN']
 
-    for model_var in models:
+    for i, model_var in enumerate(models):
         train_loader, val_loader, weights = create_loaders(data, batch_size)
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
             n_epochs, loss_fn, learning_rate, weight_decay, model_var, train_loader, val_loader)
-        batch_per_epoch = int(len(train_losses) / len(val_losses))
-        Plot_loss.add_curve(train_losses[::batch_per_epoch], label='Training loss, {}'.format(model))
-        Plot_loss.add_curve(val_losses, label='Validation loss, {}'.format(model))
-        Plot_accuracy.add_curve(train_accs[::batch_per_epoch], label='Training accuracy, {}'.format(model))
-        Plot_accuracy.add_curve(val_accs, label='Validation accuracy, {}'.format(model))
+        Plot_loss.add_curve(train_losses, label='Training, {}'.format(model_names[i]))
+        Plot_loss.add_curve(val_losses, label='Validation, {}'.format(model_names[i]))
+        Plot_accuracy.add_curve(train_accs, label='Training, {}'.format(model_names[i]))
+        Plot_accuracy.add_curve(val_accs, label='Validation, {}'.format(model_names[i]))
 
     Plot_loss.save('Ablation_study_loss.png')
     Plot_accuracy.save('Ablation_study_accuracy.png')

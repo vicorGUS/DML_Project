@@ -49,6 +49,7 @@ class StandardCNN(nn.Module):
         x = self.fc2(x)
         return x
 
+
 class ShallowCNN(nn.Module):
     def __init__(self):
         super().__init__()

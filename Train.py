@@ -22,8 +22,8 @@ def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epoch
               f"Train acc.: {sum(train_acc) / len(train_acc):.3f}, "
               f"Val. loss: {val_loss:.3f}, "
               f"Val. acc.: {val_acc:.3f}")
-        train_losses.extend(train_loss)
-        train_accs.extend(train_acc)
+        train_losses.append(sum(train_loss) / len(train_loss))
+        train_accs.append(sum(train_acc) / len(train_acc))
         val_losses.append(val_loss)
         val_accs.append(val_acc)
     return model, train_losses, train_accs, val_losses, val_accs
