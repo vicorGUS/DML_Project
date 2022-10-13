@@ -23,3 +23,7 @@ def data_from_mp3(Create_stft=False):
         np.savez("Stft_new.npz", *shorttft)
 
     print("Done!")
+
+
+if __name__ == "__main__":
+    data_from_mp3()
