@@ -26,7 +26,7 @@ def experiment():
     # Standard settings
     learning_rate = 1e-4
     weight_decay = 1e-5
-    batch_size = 32
+    batch_size = 24
 
     ### Experiment 1
     print('Learning rate experiment')
