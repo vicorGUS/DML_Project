@@ -34,7 +34,7 @@ def experiment():
         title=r'Audio identification loss: Effect of changing the learning rate', metrics='loss')
     Plot_accuracy = LearningCurvePlot(
         title=r'Audio identification accuracy: Effect of changing the learning rate', metrics='accuracy')
-
+    """"
     # Settings
     learning_rates = [5e-5, 1e-4, 5e-4]
 
@@ -51,7 +51,8 @@ def experiment():
 
     Plot_loss.save('Learning_rate_loss_2.png')
     Plot_accuracy.save('Learning_rate_accuracy_2.png')
-
+    """
+    """
     ### Experiment 2
     print('Weight decay experiment')
     Plot_loss = LearningCurvePlot(
@@ -81,7 +82,7 @@ def experiment():
 
     Plot_loss.save('Weight_decay_loss_2.png')
     Plot_accuracy.save('Weight_decay_accuracy_2.png')
-
+    """
     ### Experiment 3
     print('Batch size experiment')
     Plot_loss = LearningCurvePlot(
