@@ -34,13 +34,13 @@ def experiment():
         title=r'Audio identification loss: Effect of changing the learning rate', metrics='loss')
     Plot_accuracy = LearningCurvePlot(
         title=r'Audio identification accuracy: Effect of changing the learning rate', metrics='accuracy')
-    """"
+    
     # Settings
     learning_rates = [5e-5, 1e-4, 5e-4]
 
     for lr in learning_rates:
         model = StandardCNN()
-        train_loader, val_loader, weights = create_loaders(data, batch_size)
+        train_loader, val_loader, weights = create_loaders(data, batch_size)[:3]
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
             n_epochs, loss_fn, lr, weight_decay, model, train_loader, val_loader)
@@ -51,8 +51,7 @@ def experiment():
 
     Plot_loss.save('Learning_rate_loss_2.png')
     Plot_accuracy.save('Learning_rate_accuracy_2.png')
-    """
-    """
+
     ### Experiment 2
     print('Weight decay experiment')
     Plot_loss = LearningCurvePlot(
@@ -65,7 +64,7 @@ def experiment():
 
     for wd in weight_decays:
         model = StandardCNN()
-        train_loader, val_loader, weights = create_loaders(data, batch_size)
+        train_loader, val_loader, weights = create_loaders(data, batch_size)[:3]
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
             n_epochs, loss_fn, learning_rate, wd, model, train_loader, val_loader)
@@ -82,7 +81,7 @@ def experiment():
 
     Plot_loss.save('Weight_decay_loss_2.png')
     Plot_accuracy.save('Weight_decay_accuracy_2.png')
-    """
+ 
     ### Experiment 3
     print('Batch size experiment')
     Plot_loss = LearningCurvePlot(
@@ -95,7 +94,7 @@ def experiment():
 
     for bs in batch_sizes:
         model = StandardCNN()
-        train_loader, val_loader, weights = create_loaders(data, bs)
+        train_loader, val_loader, weights = create_loaders(data, bs)[:3]
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
             n_epochs, loss_fn, learning_rate, weight_decay, model, train_loader, val_loader)
@@ -119,7 +118,7 @@ def experiment():
     model_names = ['Standard CNN', 'Shallow CNN', 'Deep CNN']
 
     for i, model_var in enumerate(models):
-        train_loader, val_loader, weights = create_loaders(data, batch_size)
+        train_loader, val_loader, weights = create_loaders(data, batch_size)[:3]
         loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(weights))
         train_losses, train_accs, val_losses, val_accs = train(
             n_epochs, loss_fn, learning_rate, weight_decay, model_var, train_loader, val_loader)
