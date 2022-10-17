@@ -31,4 +31,4 @@ def create_loaders(data, batch_size, spec_width=196):
     train_loader = DataLoader(dataset=train_data, batch_size=batch_size, shuffle=True, num_workers=n_workers)
     val_loader = DataLoader(dataset=val_data, batch_size=batch_size, num_workers=n_workers)
 
-    return train_loader, val_loader, weights, new_input, new_label
+    return train_loader, val_loader, weights
