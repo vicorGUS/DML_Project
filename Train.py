@@ -1,6 +1,8 @@
 import torch
 
 
+## Training loop, taken from HA1
+
 def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epochs, print_every):
     print("Starting training")
     device = torch.device("cuda" if torch.cuda.is_available()

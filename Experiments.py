@@ -9,6 +9,8 @@ from Create_Dataset import create_loaders
 from Network import StandardCNN, ShallowCNN, DeepCNN
 
 
+## Hyper parameter tuning experiments and ablation study
+
 def train(num_epochs, loss_fn, learning_rate,
           weight_decay, model, train_loader, val_loader):
     now = time.time()
@@ -20,13 +22,13 @@ def train(num_epochs, loss_fn, learning_rate,
 
 
 def experiment():
-    n_epochs = 20
-    data = np.load('Melspectrogram_new.npz')
+    n_epochs = 40
+    data = np.load('Melspectrogram.npz')
 
     # Standard settings
     learning_rate = 1e-4
     weight_decay = 1e-5
-    batch_size = 32
+    batch_size = 24
 
     ### Experiment 1
     print('Learning rate experiment')
@@ -36,7 +38,7 @@ def experiment():
         title=r'Audio identification accuracy: Effect of changing the learning rate', metrics='accuracy')
 
     # Settings
-    learning_rates = [1e-5, 1e-4, 1e-3]
+    learning_rates = [5e-5, 1e-4, 5e-4]
 
     for lr in learning_rates:
         model = StandardCNN()
@@ -49,8 +51,8 @@ def experiment():
         Plot_accuracy.add_curve(train_accs, label='Training, lr = {:.0e}'.format(lr).replace("e-0", "e-"))
         Plot_accuracy.add_curve(val_accs, label='Validation, lr = {:.0e}'.format(lr).replace("e-0", "e-"))
 
-    Plot_loss.save('Learning_rate_loss.png')
-    Plot_accuracy.save('Learning_rate_accuracy.png')
+    Plot_loss.save('Learning_rate_loss_2.png')
+    Plot_accuracy.save('Learning_rate_accuracy_2.png')
 
     ### Experiment 2
     print('Weight decay experiment')
@@ -60,7 +62,7 @@ def experiment():
         title=r'Audio identification accuracy: Effect of changing the weight decay', metrics='accuracy')
 
     # Settings
-    weight_decays = [0, 1e-5, 1e-3]
+    weight_decays = [0, 1e-6, 1e-5]
 
     for wd in weight_decays:
         model = StandardCNN()
@@ -79,8 +81,8 @@ def experiment():
             Plot_accuracy.add_curve(train_accs, label='Training, wd = {:.0e}'.format(wd).replace("e-0", "e-"))
             Plot_accuracy.add_curve(val_accs, label='Validation, wd = {:.0e}'.format(wd).replace("e-0", "e-"))
 
-    Plot_loss.save('Weight_decay_loss.png')
-    Plot_accuracy.save('Weight_decay_accuracy.png')
+    Plot_loss.save('Weight_decay_loss_2.png')
+    Plot_accuracy.save('Weight_decay_accuracy_2.png')
 
     ### Experiment 3
     print('Batch size experiment')
@@ -90,7 +92,7 @@ def experiment():
         title=r'Audio identification accuracy: Effect of changing the batch size', metrics='accuracy')
 
     # Settings
-    batch_sizes = [16, 32, 64]
+    batch_sizes = [16, 24, 32]
 
     for bs in batch_sizes:
         model = StandardCNN()
@@ -103,8 +105,8 @@ def experiment():
         Plot_accuracy.add_curve(train_accs, label='Training, batch size = {}'.format(bs))
         Plot_accuracy.add_curve(val_accs, label='Validation, batch size = {}'.format(bs))
 
-    Plot_loss.save('Batch_size_loss.png')
-    Plot_accuracy.save('Batch_size_accuracy.png')
+    Plot_loss.save('Batch_size_loss_2.png')
+    Plot_accuracy.save('Batch_size_accuracy_2.png')
 
     ### Experiment 4
     print('Ablation study')
@@ -127,8 +129,8 @@ def experiment():
         Plot_accuracy.add_curve(train_accs, label='Training, {}'.format(model_names[i]))
         Plot_accuracy.add_curve(val_accs, label='Validation, {}'.format(model_names[i]))
 
-    Plot_loss.save('Ablation_study_loss.png')
-    Plot_accuracy.save('Ablation_study_accuracy.png')
+    Plot_loss.save('Ablation_study_loss_2.png')
+    Plot_accuracy.save('Ablation_study_accuracy_2.png')
 
 
 if __name__ == "__main__":

@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+## The three networks tested in the ablation study
+
 class DeepCNN(nn.Module):
     def __init__(self):
         super().__init__()

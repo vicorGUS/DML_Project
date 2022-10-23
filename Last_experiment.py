@@ -11,6 +11,7 @@ from Network import StandardCNN
 from sklearn.metrics import confusion_matrix
 
 
+## Final experiment to test the model with optimal parameters
 
 def train(num_epochs, loss_fn, learning_rate,
           weight_decay, model, train_loader, val_loader):
@@ -31,7 +32,6 @@ def experiment():
     weight_decay = 1e-5
     batch_size = 24
 
-    ### Experiment 1
     print('Final model')
     Plot_loss = LearningCurvePlot(
         title=r'Audio identification loss: Final model', metrics='loss')
@@ -60,23 +60,20 @@ def experiment():
             pred.extend((torch.argmax(z, dim=1).numpy()))
             labels.extend(y.numpy())
 
-
     cm = confusion_matrix(labels, pred)
     cm = cm.astype('float64')
     for i in range(cm.shape[0]):
         cm[i, :] = cm[i, :] / sum(cm[i, :])
-        
-    
+
     metadata = pd.read_csv('archive/xeno-canto_ca-nv_index.csv')
     fig, ax = plt.subplots(1, figsize=(15, 15))
     ax.imshow(cm)
-    ax.set_xticks(range(len(metadata['english_cname'].unique())), metadata['english_cname'].unique(), rotation='vertical', fontsize=5)
+    ax.set_xticks(range(len(metadata['english_cname'].unique())), metadata['english_cname'].unique(),
+                  rotation='vertical', fontsize=5)
     ax.set_yticks(range(len(metadata['english_cname'].unique())), metadata['english_cname'].unique(), fontsize=5)
     ax.set_xlabel('Predicted label')
     ax.set_ylabel('True label')
     plt.savefig('Confusion_matrix.png', transparent=True)
-
-
 
 
 if __name__ == "__main__":

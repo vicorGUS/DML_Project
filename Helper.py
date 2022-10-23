@@ -4,6 +4,8 @@ import pydub
 from torch.utils.data import Dataset
 
 
+## Helper functions (create plots&datasets, read mp3 files and logarithm spectrograms)
+
 class LearningCurvePlot:
 
     def __init__(self, title=None, metrics=None):

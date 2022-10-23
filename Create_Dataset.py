@@ -5,6 +5,8 @@ import torchvision.transforms as transforms
 import torch
 
 
+## Creates data loader from spectrograms, given the batch size and spectrogram widths
+
 def create_loaders(data, batch_size, spec_width=196):
     label = [i // 30 for i in range(2730)]
     input = [data[i] for i in data]
